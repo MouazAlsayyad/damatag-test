@@ -8,6 +8,7 @@ import {
   UseGuards,
   Req,
   Put,
+  Logger,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -28,6 +29,7 @@ import { ResponseTaskDto } from './dto/response-task.dto';
 @Controller(Tasks)
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
+  private logger = new Logger(TasksController.name);
 
   @UseGuards(AuthGuard())
   @Post()
@@ -37,7 +39,11 @@ export class TasksController {
     @Req() req,
     @Body() createTaskDto: CreateTaskDto,
   ): Promise<ResponseTaskDto> {
-    return this.tasksService.createTask(createTaskDto, req.user);
+    try {
+      return this.tasksService.createTask(createTaskDto, req.user);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @UseGuards(AuthGuard())
@@ -48,7 +54,11 @@ export class TasksController {
     description: 'List of tasks',
   })
   findAll(@Req() req): Promise<ResponseTaskDto[]> {
-    return this.tasksService.findAllTask(req.user);
+    try {
+      return this.tasksService.findAllTask(req.user);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @UseGuards(AuthGuard())
@@ -63,7 +73,11 @@ export class TasksController {
     @Req() req,
     @Param('id', new ParseMongoIdPipe()) id: string,
   ): Promise<ResponseTaskDto> {
-    return this.tasksService.findTaskById(id, req.user);
+    try {
+      return this.tasksService.findTaskById(id, req.user);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @UseGuards(AuthGuard())
@@ -76,7 +90,11 @@ export class TasksController {
     @Body() updateTaskDto: UpdateTaskDto,
     @Req() req,
   ): Promise<ResponseTaskDto> {
-    return this.tasksService.updateTaskById(id, updateTaskDto, req.user);
+    try {
+      return this.tasksService.updateTaskById(id, updateTaskDto, req.user);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 
   @UseGuards(AuthGuard())
@@ -87,6 +105,10 @@ export class TasksController {
     @Param('id', new ParseMongoIdPipe()) id: string,
     @Req() req,
   ): Promise<ResponseTaskDto> {
-    return this.tasksService.removeTaskById(id, req.user);
+    try {
+      return this.tasksService.removeTaskById(id, req.user);
+    } catch (e) {
+      this.logger.error(e);
+    }
   }
 }
